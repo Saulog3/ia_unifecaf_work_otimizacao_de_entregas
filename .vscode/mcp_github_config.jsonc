@@ -1,0 +1,15 @@
+{
+  // Configuração template para conexão MCP -> GitHub
+  // ATENÇÃO: não coloque tokens em claro neste arquivo. Use a variável de ambiente especificada em auth.tokenEnvVar.
+  "mcp": {
+    "provider": "github",
+    "owner": "<GITHUB_OWNER_OR_ORG>",
+    "repo": "<REPOSITORY_NAME>",
+    "branch": "main",
+    "mcpServerUrl": "http://localhost:PORT",
+    "auth": {
+      "type": "pat",
+      "tokenEnvVar": "GITHUB_MCP_PAT"
+    }
+  }
+}
