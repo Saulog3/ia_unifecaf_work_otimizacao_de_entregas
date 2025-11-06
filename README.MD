@@ -194,7 +194,7 @@ Visualize no navegador para ver:
 
 ## Exemplo de resultado
 
-![Mapa de entregas com clusters e rotas](https://user-images.githubusercontent.com/example/sabor-express-map.png)
+![Mapa de entregas com clusters e rotas] (static\Resultados Rotas.png)
 
 ---
 
