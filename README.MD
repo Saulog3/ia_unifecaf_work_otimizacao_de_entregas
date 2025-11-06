@@ -194,7 +194,8 @@ Visualize no navegador para ver:
 
 ## Exemplo de resultado
 
-![Mapa de entregas com clusters e rotas] (static\Resultados Rotas.png)
+![Mapa de entregas com clusters e rotas](static/Resultados_Rotas.png)
+
 
 ---
 
