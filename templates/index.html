@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
     <title>Sabor Express - Otimização de Entregas</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Otimização de Entregas</h1>
-    <form method="POST">
-        <button type="submit">Gerar Clusters e Rotas</button>
-    </form>
+    <div class="container">
+        <h1>🚀 Otimização de Rotas - Sabor Express</h1>
+        <p>Este sistema utiliza algoritmos de <strong>IA</strong> (K-Means e A*) para agrupar entregas e sugerir as rotas mais eficientes.</p>
+
+        <form method="POST">
+            <button type="submit">Gerar Clusters e Rotas</button>
+        </form>
+    </div>
 </body>
 </html>

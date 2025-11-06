@@ -1,12 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
     <title>Resultados - Sabor Express</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Rotas Otimizadas</h1>
-    <p>Rota de exemplo: {{ rota|safe }}</p>
-    <iframe src="../static/cluster_plot.html" width="800" height="600"></iframe>
+    <div class="container">
+        <h1>Rotas Otimizadas</h1>
+
+        {% if rotas %}
+        <h2>Resumo das rotas geradas:</h2>
+        <ul>
+            {% for nome, caminho in rotas.items() %}
+                <li><strong>{{ nome }}:</strong> {{ caminho|join(' → ') }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <h2>Mapa das Entregas</h2>
+        <iframe 
+            src="{{ url_for('static', filename='cluster_plot.html') }}" 
+            width="900" height="600" 
+            style="border: 2px solid #ccc; border-radius: 8px;">
+        </iframe>
+
+        <br><br>
+        <a href="{{ url_for('index') }}" class="btn">← Voltar</a>
+    </div>
 </body>
 </html>

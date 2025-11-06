@@ -1,38 +1,51 @@
+# app.py
 from flask import Flask, render_template, request
-import pandas as pd
-import folium
 from src.clustering import clusterizar_entregas
 from src.graph import construir_grafo, encontrar_rota
+from src.routing import otimizar_rota_por_cluster
+from src.utils import gerar_mapa_com_rotas
+import pandas as pd
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        # Clusterizar entregas
-        dados = clusterizar_entregas()
+        # clusteriza (retorna df, modelo)
+        dados, _ = clusterizar_entregas()
 
-        # Construir grafo e encontrar rota de exemplo
+        # construir grafo (pode ser usado para rotas entre pares)
         grafo = construir_grafo()
-        rota = encontrar_rota(grafo, 'P5', 'P10')  # Exemplo: restaurante P5 para cliente P10
 
-        # Plotar mapa
-        mapa = folium.Map(location=[23.55, 46.65], zoom_start=12)
-        for _, row in dados.iterrows():
-            color = 'red' if row['tipo'] == 'restaurante' else 'blue'
-            folium.CircleMarker(
-                location=[row["lat"], row["lon"]],
-                radius=5,
-                color=color,
-                fill=True,
-                fill_color=color,
-                popup=f"{row['id']} (Cluster {row['cluster']})"
-            ).add_to(mapa)
+        # preparar posicoes para heuristica (id -> (lat,lon))
+        posicoes = {row['id']:(row['lat'], row['lon']) for _, row in dados.iterrows()}
 
-        # Salvar mapa
-        mapa.save('static/cluster_plot.html')
+        # Para cada cluster, otimizar rota interna via TSP 2-opt
+        rotas_por_cluster = {}
+        for cluster_id, dfc in dados.groupby('cluster'):
+            dfc = dfc.reset_index(drop=True)
+            if len(dfc) == 0: 
+                continue
+            ordem_ids = otimizar_rota_por_cluster(dfc)  # lista de ids
+            rotas_por_cluster[f'Cluster {cluster_id}'] = ordem_ids
 
-        return render_template('resultado.html', rota=rota)
+        # Exemplo adicional: rota entre um restaurante e um cliente (A*)
+        # (substitua 'P5','P10' por ids válidos do seu data)
+        exemplo_rota_astar = None
+        try:
+            exemplo_rota_astar = encontrar_rota(grafo, 'P5', 'P10', posicoes=posicoes)
+        except Exception:
+            exemplo_rota_astar = []
+
+        # juntar rotas para visualização
+        todas_rotas = {'TSP por cluster - '+k: v for k,v in rotas_por_cluster.items()}
+        if exemplo_rota_astar:
+            todas_rotas['Exemplo A* P5->P10'] = exemplo_rota_astar
+
+        # gerar mapa com marcadores e rotas
+        caminho_mapa = gerar_mapa_com_rotas(dados, todas_rotas)
+        return render_template('resultado.html', mapa_path=caminho_mapa, rotas=todas_rotas)
+
     return render_template('index.html')
 
 if __name__ == '__main__':
